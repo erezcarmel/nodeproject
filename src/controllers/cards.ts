@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
-import { Board } from '../db/board.model';
+import { Card } from '../db/card.model';
 
 export const get = async (req:Request, res:Response) => {
     try {
         if (req.method == 'GET') {
-            const board = await Board.findById(req.params.id);
-            return res.status(200).json(board);
+            const card = await Card.findById(req.params.id);
+            return res.status(200).json(card);
         }
     } catch (error) {
         res.status(error.status || 500);
@@ -15,12 +15,13 @@ export const get = async (req:Request, res:Response) => {
 export const create = (req:Request, res:Response) => {
     try {
         if (req.method == 'POST') {
-            const board = new Board({
-                owner: req.body.owner
+            const card = new Card({
+                boardId: req.body.boardId,
+                content: req.body.content
             });
-            board.save((err, board) => {
+            card.save((err, card) => {
                 if (err) return res.status(500).send(err);
-                return res.status(200).json(board);
+                return res.status(200).json(card);
             });
         }
     } catch (error) {
@@ -31,7 +32,7 @@ export const create = (req:Request, res:Response) => {
 export const update = async (req:Request, res:Response) => {
     try {
         if (req.method == 'PUT') {
-            const result = await Board.findOneAndUpdate(
+            const result = await Card.findOneAndUpdate(
                 { _id: req.params.id },
                 req.body,
                 { upsert: true }
@@ -46,7 +47,7 @@ export const update = async (req:Request, res:Response) => {
 export const remove = async (req:Request, res:Response) => {
     try {
         if (req.method == 'DELETE') {
-            const result = await Board.deleteOne({ _id: req.params.id });
+            const result = await Card.deleteOne({ _id: req.params.id });
             return res.status(200).json(result);
         }
     } catch (error) {
