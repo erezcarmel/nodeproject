@@ -10,7 +10,7 @@ export const get = async (req:Request, res:Response) => {
                 { $lookup: {
                     from: "cards",
                     localField: "_id",
-                    foreignField: "boardId",
+                    foreignField: "board",
                     as: "cards"
                 }
             }]);

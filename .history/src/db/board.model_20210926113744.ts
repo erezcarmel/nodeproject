@@ -5,7 +5,8 @@ export interface IBoard extends Document {
 }
 
 const BoardSchema: Schema = new Schema({
-    owner: { type: Schema.Types.ObjectId, ref: 'User', required: true }
+    owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    cards: [{ type: Schema.Types.ObjectId, ref: 'Card' }]
 });
 
 export const Board = model<IBoard>('Board', BoardSchema);

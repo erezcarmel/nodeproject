@@ -6,9 +6,9 @@ export interface IUser extends Document {
 }
 
 const UserSchema: Schema = new Schema({
-    _id: Schema.Types.ObjectId,
     name: { type: String, required: true },
-    password: { type: String, required: true }
+    password: { type: String, required: true },
+    boards: [{ type: Schema.Types.ObjectId, ref: 'Board' }]
 });
 
 export const User = model<IUser>('User', UserSchema);

@@ -1,20 +1,22 @@
-import { Types } from 'mongoose';
 import { Request, Response } from 'express';
-import { Board } from '../db/board.model';
+import { User } from '../db';
 
 export const get = async (req:Request, res:Response) => {
     try {
         if (req.method == 'GET') {
-            let board = await Board.aggregate([
-                { $match: { _id: Types.ObjectId(req.params.id) } },
-                { $lookup: {
-                    from: "cards",
+            // let user = await User.findById(req.params.id);
+            let user = await User.aggregate([{
+                $group: { id: req.params.id}
+            }, {
+                $lookup: {
+                    from: "Boards",
                     localField: "_id",
-                    foreignField: "boardId",
-                    as: "cards"
+                    foreignField: "owner",
+                    as: "boards"
                 }
             }]);
-            return res.status(200).json(board);
+            console.log(user);
+            return res.status(200).json(user);
         }
     } catch (error) {
         res.status(error.status || 500);
@@ -24,12 +26,14 @@ export const get = async (req:Request, res:Response) => {
 export const create = (req:Request, res:Response) => {
     try {
         if (req.method == 'POST') {
-            const board = new Board({
-                owner: req.body.owner
+            const user = new User({
+                name: req.body.name,
+                password: req.body.password,
+                boards: []
             });
-            board.save((err, board) => {
+            user.save((err, user) => {
                 if (err) return res.status(500).send(err);
-                return res.status(200).json(board);
+                return res.status(200).json(user);
             });
         }
     } catch (error) {
@@ -40,7 +44,7 @@ export const create = (req:Request, res:Response) => {
 export const update = async (req:Request, res:Response) => {
     try {
         if (req.method == 'PUT') {
-            const result = await Board.findOneAndUpdate(
+            const result = await User.findOneAndUpdate(
                 { _id: req.params.id },
                 req.body,
                 { upsert: true }
@@ -55,7 +59,7 @@ export const update = async (req:Request, res:Response) => {
 export const remove = async (req:Request, res:Response) => {
     try {
         if (req.method == 'DELETE') {
-            const result = await Board.deleteOne({ _id: req.params.id });
+            const result = await User.deleteOne({ _id: req.params.id });
             return res.status(200).json(result);
         }
     } catch (error) {

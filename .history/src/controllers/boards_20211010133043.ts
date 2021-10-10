@@ -1,16 +1,16 @@
-import { Types } from 'mongoose';
 import { Request, Response } from 'express';
 import { Board } from '../db/board.model';
 
 export const get = async (req:Request, res:Response) => {
     try {
         if (req.method == 'GET') {
-            let board = await Board.aggregate([
+            const board = await Board.findById(req.params.id);
+            let user = await Board.aggregate([
                 { $match: { _id: Types.ObjectId(req.params.id) } },
                 { $lookup: {
                     from: "cards",
                     localField: "_id",
-                    foreignField: "boardId",
+                    foreignField: "board",
                     as: "cards"
                 }
             }]);
